@@ -26,7 +26,7 @@ foraging importance, and (3) the transferability of these models by testing them
 across gradients of grazing intensity.
 
 
-### The repo contains the following folders:
+### The repo contains the following sub-folders in the "Scripts" folder:
 
 "Metadata_Extraction" folder Contains scripts for extracting EXIF metadata from drone images.
 "Canopy_Height_Modeling" Contains the script for creating Canopy Height Models (CHM) using drone-derived point cloud data.
