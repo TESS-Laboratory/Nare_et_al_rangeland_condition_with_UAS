@@ -25,6 +25,8 @@ AGB, (2) the effectiveness of UAV observations in predicting herbaceous biomass 
 foraging importance, and (3) the transferability of these models by testing them 
 across gradients of grazing intensity.
 
+![image](https://github.com/user-attachments/assets/dc2ee052-9279-4dc0-8c88-7f16900e1a5c)
+
 
 ### The repo contains the following sub-folders in the "Scripts" folder:
 
