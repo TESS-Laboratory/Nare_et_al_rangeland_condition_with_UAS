@@ -6,7 +6,7 @@
 library (lidR) # The lidR package provides tools for reading, processing, analysing, 
 # and visualising point cloud data
 library (rgl)   ##a versatile and interactive 3D viewer with points coloured by Z coordinates
-library(mapview) ##Interactive viewing of point clod, raster and vector data
+library(mapview) ##Interactive viewing of point cloud, raster and vector data
 library(sf)     ### for reading AOI boundary shapefile
 library(raster)
 library(ggplot2)   ##Creating visualisations and plots
