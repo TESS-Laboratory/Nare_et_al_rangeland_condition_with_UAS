@@ -9,8 +9,8 @@ This repository includes summary data and the analysis codebase for the manuscri
 
 To assess how UAV fine-scale remote sensing could contribute to monitoring and mapping AGB in Kalahari savanna ecosystems, this study addressed the following research questions:
 
-1. How well can aboveground biomass in Kalahari savanna ecosystems be predicted by fine-scale UAV observations of canopy height and spectral reflectance?; 
-2. How well can AGB of foraging importance be predicted by fine-scale UAV observations of canopy height and spectral reflectance?; 
+1. How well can aboveground biomass in Kalahari savanna ecosystems be predicted by fine-scale UAV observations of canopy height and spectral reflectance?
+2. How well can AGB of foraging importance be predicted by fine-scale UAV observations of canopy height and spectral reflectance?
 3. Do these relationships between biomass components and remotely sensed attributes differ across different levels of grazing intensity?
 
 
