@@ -65,7 +65,7 @@ colnames(forage_data) <- make.names(colnames(forage_data), unique = TRUE)
 ## Mean_Canopy_Height.m., NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5
 
 forage_data_subset = forage_data %>% 
-  select(AOI, grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5)
+  select(grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5)
 
 str(forage_data_subset)
 
@@ -114,15 +114,17 @@ learner_rf
 
 
 ####Model is trained by passing a task to a learner with the $train() method:
+set.seed(123)  # Set a fixed random seed
+splits = partition(task_forage)  # Randomly split the data
 
-###Create random splits of the data
-splits = partition(task_forage)
 splits
 #####Train the model
+set.seed(123)  # Fix randomness
+
 ###we will tell the model to only use the training data by passing the row IDs 
 ##from partition to the row_ids argument of $train()
 
-learner_rf$train(task_forage, row_ids = splits$train)
+learner_rf$train(task_forage, row_ids = splits$train)      #Train model
 
 #####access hyperparameters
 learner_rf$param_set
@@ -160,7 +162,9 @@ resampling <- rsmp("cv", folds = 5)
 print(task_forage)
 
 # Perform cross-validation
-resampling <- rsmp("cv", folds = 5)
+set.seed(123)  # Ensures reproducibility
+resampling <- rsmp("cv", folds = 5)  # Define 5-fold CV
+
 rr <- resample(task_forage, learner_rf, resampling)
 cat("Cross-validated R-squared:", rr$aggregate(msr("regr.rsq")), "\n")
 cat("Cross-validated RMSE:", rr$aggregate(msr("regr.rmse")), "\n")
