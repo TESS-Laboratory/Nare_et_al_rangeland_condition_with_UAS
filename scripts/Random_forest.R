@@ -186,7 +186,7 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
   coord_flip() +  # Flip axes for readability
   labs(title = "Feature Importance (Random Forest)",
        x = "Predictors", y = "Importance Value") +
-  theme_minimal()
+  theme_beautiful()
 
 
 
