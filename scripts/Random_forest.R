@@ -3,9 +3,11 @@
 library(tidyverse)
 library(mlr3verse)
 library(GGally)        # works with mlr3viz
+library(Boruta)        # Feature selection
 
 ########################THEME BEAUTIFUL FOR PLOTS#####----
 ## Create Plotting theme
+
 theme_beautiful <- function() {
   theme_bw() +
     theme(
@@ -48,6 +50,7 @@ windowsFonts("Helvetica" = windowsFont("Helvetica")) # Ensure font is mapped cor
 forage_data <- read_csv("data/Data.csv")
 view(forage_data)
 
+
 ################VISUALISE DATA###########################----
 
 forage_data %>%
@@ -56,6 +59,7 @@ forage_data %>%
   geom_jitter(width = 0.2, alpha = 0.7, color = "black") +     # Jittered points
   labs(x = "AOI", y = "Synthetic Grazing Value") +
   theme_beautiful()
+
 
 
 # Ensure valid column names
@@ -67,14 +71,30 @@ colnames(forage_data) <- make.names(colnames(forage_data), unique = TRUE)
 forage_data_subset = forage_data %>% 
   select(grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5)
 
-str(forage_data_subset)
 
+####################### APPLY BORUTA FEATURE SELECTION #######################----
+
+set.seed(123)  # Ensure reproducibility
+boruta_result <- Boruta(grazing_value ~ ., data = forage_data_subset, doTrace = 2)
+
+# Print results of Boruta feature selection
+print(boruta_result)
+
+# Confirm important features
+final_features <- getSelectedAttributes(boruta_result, withTentative = TRUE)
+cat("Selected Features:", final_features, "\n")
+
+# Subset dataset with selected features
+forage_data_selected <- forage_data %>% select(all_of(c("grazing_value", final_features)))
+
+str(forage_data_selected)
 
 ########################TASK#################################----
 # Setting up regression task
+
 task_forage = TaskRegr$new(
   id = "forage_quality",
-  backend = forage_data_subset,
+  backend = forage_data_selected,
   target = "grazing_value"
 )
 
@@ -85,33 +105,13 @@ task_forage
 ##feature values
 autoplot(task_forage, type = "pairs")
 
-#####retrieving task metadata
-c(task_forage$nrow, task_forage$ncol)  #### the dimensions of the task
-
-
-c(Features = task_forage$feature_names,     #### number of features and target
-  Target = task_forage$target_names)        ### column
-
-head(task_forage$row_ids)                    ### check row IDs
-
-
-task_forage$data()                          # retrieve all data
-
-
-task_forage$data(rows = c(1, 5, 89), cols = task_forage$feature_names) # retrieve 
-#data for rows with IDs 1, 5, and 10 and all feature columns
-
-
-
 ###################LEARNERS#################################----
 
 # Define the random forest learner
 learner_rf = lrn("regr.ranger", num.trees = 500, importance = "impurity", predict_type = "se")
 learner_rf
 
-
 #################TRAINING###################################----
-
 
 ####Model is trained by passing a task to a learner with the $train() method:
 set.seed(123)  # Set a fixed random seed
@@ -120,21 +120,12 @@ splits = partition(task_forage)  # Randomly split the data
 splits
 #####Train the model
 set.seed(123)  # Fix randomness
-
-###we will tell the model to only use the training data by passing the row IDs 
-##from partition to the row_ids argument of $train()
-
 learner_rf$train(task_forage, row_ids = splits$train)      #Train model
 
 #####access hyperparameters
 learner_rf$param_set
 
-
 #########################PREDICTING#######################----
-
-## we call the $predict() method of our trained learner and again will use the 
-##row_ids argument, but this time to pass the IDs of our test set
-
 
 # Make predictions
 predictions = learner_rf$predict(task_forage, row_ids = splits$test)
@@ -158,8 +149,6 @@ cat("MAE:", mae_value, "\n")
 
 # Define resampling strategy (5-fold cross-validation)
 resampling <- rsmp("cv", folds = 5)
-
-print(task_forage)
 
 # Perform cross-validation
 set.seed(123)  # Ensures reproducibility
@@ -187,6 +176,3 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
   labs(title = "Feature Importance (Random Forest)",
        x = "Predictors", y = "Importance Value") +
   theme_beautiful()
-
-
-
