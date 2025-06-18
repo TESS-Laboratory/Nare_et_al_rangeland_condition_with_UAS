@@ -55,18 +55,16 @@ head(ND)
 str(ND)
 view(ND)
 #####Visualising data distribution
-a <- ggplot(ND, aes(x = `Mean_Canopy_Height(m)`)) +
+a <- ggplot(ND, aes(x = Mean_Canopy_Height_m)) +
   geom_density()+
   theme_beautiful()+
   labs(x = "Mean Canopy Height (m)")
-
 
 b <- ggplot(ND, aes(x = NDVI)) +
   geom_density()+
   theme_beautiful()
 
-
-c <- ggplot(ND, aes(x = `AGB (g/m2)`)) +
+c <- ggplot(ND, aes(x = AGB_g_m_2)) +
   geom_density()+
   theme_beautiful()
 
@@ -82,8 +80,8 @@ ND$AOI <- factor(ND$AOI)
 ND$Species <- factor(ND$Species)
 
 # Perform OLS regression (Ordinary Least Squares)
-m <- lm(`AGB (g/m2)` ~ NDVI, data=ND)  # OLS model for AGB vs NDVI
-n <- lm(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=ND)  # OLS model for AGB vs Mean Canopy Height
+m <- lm(AGB_g_m_2 ~ NDVI, data=ND)  # OLS model for AGB vs NDVI
+n <- lm(AGB_g_m_2 ~ Mean_Canopy_Height_m, data=ND)  # OLS model for AGB vs Mean Canopy Height
 
 # Print summaries and reports of the OLS models
 summary(n)
@@ -110,8 +108,8 @@ ggsave("combined.jpg", height = 16, width = 16, units = "cm")
 
 
 # Perform robust regression (lmrob) for both models
-rm <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data=ND)  # Robust regression for AGB vs NDVI
-rn <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=ND)  # Robust regression for AGB vs Canopy Height
+rm <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data=ND)  # Robust regression for AGB vs NDVI
+rn <- robustbase::lmrob(AGB_g_m_2 ~ Mean_Canopy_Height_m, data=ND)  # Robust regression for AGB vs Canopy Height
 
 # Print summaries and tables for robust regression models
 summary(rm)
@@ -140,7 +138,7 @@ custom_colors <- c(
 
 # Plot a: Mean Canopy Height vs AGB with robust regression line
 plota <- ND %>%
-  ggplot(aes(x = `Mean_Canopy_Height(m)`, y = `AGB (g/m2)`)) +
+  ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_abline(intercept = intercept_rn, slope = slope_rn) +  # Add robust regression line
   theme_beautiful() +  # Use a classic theme
@@ -151,9 +149,9 @@ plota <- ND %>%
   theme(
     plot.title = element_text(hjust = 0.5)  # Center the plot title
   ) +
-  annotate("text", x = min(ND$`Mean_Canopy_Height(m)`), y = max(ND$`AGB (g/m2)`) - 0.05 * max(ND$`AGB (g/m2)`),
+  annotate("text", x = min(ND$Mean_Canopy_Height_m), y = max(ND$AGB_g_m_2) - 0.05 * max(ND$AGB_g_m_2),
            label = equation_rn, hjust = 0, vjust = 1, size = 4, color = "black") +
-  annotate("text", x = min(ND$`Mean_Canopy_Height(m)`), y = max(ND$`AGB (g/m2)`) - 0.15 * max(ND$`AGB (g/m2)`),
+  annotate("text", x = min(ND$Mean_Canopy_Height_m), y = max(ND$AGB_g_m_2) - 0.15 * max(ND$AGB_g_m_2),
            label = details_rn, hjust = 0, vjust = 1, size = 4, color = "black") +
   scale_color_manual(values = custom_colors) +  # Apply custom colors
   labs(tag = "a)") +
@@ -164,7 +162,7 @@ print(plota)
 
 # Plot b: Robust regression lines for each species
 plotb <- ND %>%
-  ggplot(aes(x = `Mean_Canopy_Height(m)`, y = `AGB (g/m2)`, color = Species)) +
+  ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2, color = Species)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +  # Add robust regression line for each species
   theme_beautiful() +  # Use a classic theme
@@ -194,7 +192,7 @@ details_rm <- paste0("p-value = ", format.pval(p_value_rm, digits = 2), "\nn = "
 
 # Plot c: NDVI vs AGB with robust regression line
 plotc <- ND %>%
-  ggplot(aes(x = NDVI, y = `AGB (g/m2)`)) +
+  ggplot(aes(x = NDVI, y = AGB_g_m_2)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_abline(intercept = intercept_rm, slope = slope_rm) +  # Add robust regression line
   theme_beautiful() +  # Use a classic theme
@@ -205,9 +203,9 @@ plotc <- ND %>%
   theme(
     plot.title = element_text(hjust = 0.5)  # Center the plot title
   ) +
-  annotate("text", x = min(ND$NDVI), y = max(ND$`AGB (g/m2)`) - 0.05 * max(ND$`AGB (g/m2)`),
+  annotate("text", x = min(ND$NDVI), y = max(ND$AGB_g_m_2) - 0.05 * max(ND$AGB_g_m_2),
            label = equation_rm, hjust = 0, vjust = 1, size = 4, color = "black") +
-  annotate("text", x = min(ND$NDVI), y = max(ND$`AGB (g/m2)`) - 0.15 * max(ND$`AGB (g/m2)`),
+  annotate("text", x = min(ND$NDVI), y = max(ND$AGB_g_m_2) - 0.15 * max(ND$AGB_g_m_2),
            label = details_rm, hjust = 0, vjust = 1, size = 4, color = "black") +
   scale_color_manual(values = custom_colors) +  # Apply custom colors
   labs(tag = "c)") +
@@ -218,7 +216,7 @@ print(plotc)
 
 # Plot d: Robust regression lines for each species without model annotations for NDVI
 plotd <- ND %>%
-  ggplot(aes(x = NDVI, y = `AGB (g/m2)`, color = Species)) +
+  ggplot(aes(x = NDVI, y = AGB_g_m_2, color = Species)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +  # Add robust regression line for each species
   theme_beautiful() +  # Use a classic theme
@@ -247,5 +245,5 @@ print(combined_plot)
 
 # Save the combined plot using ggsave
 
-ggsave("combined.jpg", height = 16, width = 16, units = "cm")
+ggsave("combined.jpg", height = 28, width = 28, units = "cm")
 

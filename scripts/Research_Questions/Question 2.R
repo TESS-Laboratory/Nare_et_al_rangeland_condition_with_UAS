@@ -29,23 +29,23 @@ ND$Species <- factor(ND$Species)
 
 # Grouping the data by Grazing value
 Low <- ND %>%
-  select(Species, `Grazing value`, `AGB (g/m2)`, `Mean_Canopy_Height(m)`, NDVI) %>% 
+  select(Species, `Grazing value`, AGB_g_m_2, `Mean_Canopy_Height(m)`, NDVI) %>% 
   filter(`Grazing value` == "Low")
 
 
 Average <- ND %>% 
-  select(Species, `Grazing value`, `AGB (g/m2)`, `Mean_Canopy_Height(m)`, NDVI) %>% 
+  select(Species, `Grazing value`, AGB_g_m_2, `Mean_Canopy_Height(m)`, NDVI) %>% 
   filter(`Grazing value` == "Average")
 
 
 High <- ND %>% 
-  select(Species, `Grazing value`, `AGB (g/m2)`, `Mean_Canopy_Height(m)`, NDVI) %>% 
+  select(Species, `Grazing value`, AGB_g_m_2, `Mean_Canopy_Height(m)`, NDVI) %>% 
   filter(`Grazing value` == "High")
 
 # Function to fit robust regression and evaluate performance
 perform_robust_regression <- function(data, grazing_value) {
   # Fit a robust regression model
-  model <- lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data = data)
+  model <- lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data = data)
   
   # Model performance metrics
   model_perf <- model_performance(model)
@@ -70,14 +70,14 @@ performance_results$High <- perform_robust_regression(High, "High")
 ##########################################################
 
 # Perform robust regression (lmrob) for both models
-rlowNDVI <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data=Low)  
-rlowCHM <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=Low)  
+rlowNDVI <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data=Low)  
+rlowCHM <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=Low)  
 
-ravNDVI <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data=Average)  
-ravCHM <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=Average)
+ravNDVI <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data=Average)  
+ravCHM <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=Average)
 
-rhighNDVI <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data=High)
-rhighCHM <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=High)
+rhighNDVI <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data=High)
+rhighCHM <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=High)
 
 
 # Print summaries and tables for robust regression models
@@ -102,12 +102,12 @@ tab_model(rhighCHM)
 
 # Models
 models <- list(
-  rlowNDVI = lmrob(`AGB (g/m2)` ~ NDVI, data=Low),
-  rlowCHM = lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=Low),
-  ravNDVI = lmrob(`AGB (g/m2)` ~ NDVI, data=Average),
-  ravCHM = lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=Average),
-  rhighNDVI = lmrob(`AGB (g/m2)` ~ NDVI, data=ND),
-  rhighCHM = lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=ND)
+  rlowNDVI = lmrob(AGB_g_m_2 ~ NDVI, data=Low),
+  rlowCHM = lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=Low),
+  ravNDVI = lmrob(AGB_g_m_2 ~ NDVI, data=Average),
+  ravCHM = lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=Average),
+  rhighNDVI = lmrob(AGB_g_m_2 ~ NDVI, data=ND),
+  rhighCHM = lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=ND)
 )
 
 # Corresponding data for each model
@@ -130,7 +130,7 @@ compute_relative_error <- function(model, data) {
   }
   
   # Calculate the mean out-of-sample prediction error
-  actuals <- data$`AGB (g/m2)`
+  actuals <- data$AGB_g_m_2
   prediction_error <- mean((predictions - actuals)^2)
   
   # Extract the model slope (assuming a simple linear model)
@@ -250,14 +250,14 @@ create_plotndvi <- function(data, model_details, x_var, y_var, title_tag, color)
 }
 
 # # Create models
-# rlowNDVI <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data = Low)
-# rlowCHM <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data = Low)
+# rlowNDVI <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data = Low)
+# rlowCHM <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data = Low)
 # 
-# ravNDVI <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data = Average)
-# ravCHM <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data = Average)
+# ravNDVI <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data = Average)
+# ravCHM <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data = Average)
 # 
-# rhighNDVI <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data = High)
-# rhighCHM <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data = High)
+# rhighNDVI <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data = High)
+# rhighCHM <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data = High)
 
 # Extract model details
 model_details_list <- list(

@@ -18,19 +18,19 @@ head(ND)
 
 # Step 1: Fit models ----
 # Perform robust regression for NDVI vs AGB
-robust_ndvi <- robustbase::lmrob(`AGB (g/m2)` ~ NDVI, data=ND)
+robust_ndvi <- robustbase::lmrob(AGB_g_m_2 ~ NDVI, data=ND)
 summary(robust_ndvi)
 tab_model(robust_ndvi)
 
 # Perform robust regression for Canopy height vs AGB
-robust_chm <- robustbase::lmrob(`AGB (g/m2)` ~ `Mean_Canopy_Height(m)`, data=ND)
+robust_chm <- robustbase::lmrob(AGB_g_m_2 ~ `Mean_Canopy_Height(m)`, data=ND)
 summary(robust_chm)
 tab_model(robust_chm)
 plot_residuals(robust_chm)
 performance(robust_chm)
 
 # Plot Predicted vs Observed AGB (Canopy Height Model)
-plot(x = predict(robust_chm), y = ND$`AGB (g/m2)`,
+plot(x = predict(robust_chm), y = ND$AGB_g_m_2,
      xlab = "Predicted values",
      ylab = "Observed values",
      main = "Predicted vs observed")
@@ -48,15 +48,15 @@ Pred <- read_csv("C:/Workspace/Nare_et_al_rangeland_condition_with_UAS/predicted
 # Step 4: Create new data frames for each AOI ----
 
 new_data_aoi1 <- Pred %>%                                                             # High grazing intensity AOI
-  select(Species, `Grazing value`, `AGB (g/m2)`, `Mean_Canopy_Height(m)`, NDVI, PredictedCHM) %>% 
+  select(Species, `Grazing value`, AGB_g_m_2, `Mean_Canopy_Height(m)`, NDVI, PredictedCHM) %>% 
   filter(`AOI` == "1")
 
 new_data_aoi2 <- Pred %>%                                                             # Average grazing intensity AOI
-  select(Species, `Grazing value`, `AGB (g/m2)`, `Mean_Canopy_Height(m)`, NDVI, PredictedCHM) %>% 
+  select(Species, `Grazing value`, AGB_g_m_2, `Mean_Canopy_Height(m)`, NDVI, PredictedCHM) %>% 
   filter(`AOI` == "2")
 
 new_data_aoi3 <- Pred %>%                                                             # Low grazing intensity AOI
-  select(Species, `Grazing value`, `AGB (g/m2)`, `Mean_Canopy_Height(m)`, NDVI, PredictedCHM) %>% 
+  select(Species, `Grazing value`, AGB_g_m_2, `Mean_Canopy_Height(m)`, NDVI, PredictedCHM) %>% 
   filter(`AOI` == "3")
 
 
@@ -71,9 +71,9 @@ calc_metrics <- function(observed, predicted) {
 }
 
 # Calculate metrics for each AOI for Canopy Height model
-metrics_aoi1_chm <- calc_metrics(new_data_aoi1$`AGB (g/m2)`, new_data_aoi1$PredictedCHM)
-metrics_aoi2_chm <- calc_metrics(new_data_aoi2$`AGB (g/m2)`, new_data_aoi2$PredictedCHM)
-metrics_aoi3_chm <- calc_metrics(new_data_aoi3$`AGB (g/m2)`, new_data_aoi3$PredictedCHM)
+metrics_aoi1_chm <- calc_metrics(new_data_aoi1$AGB_g_m_2, new_data_aoi1$PredictedCHM)
+metrics_aoi2_chm <- calc_metrics(new_data_aoi2$AGB_g_m_2, new_data_aoi2$PredictedCHM)
+metrics_aoi3_chm <- calc_metrics(new_data_aoi3$AGB_g_m_2, new_data_aoi3$PredictedCHM)
 
 # Print metrics for each AOI
 metrics_aoi1_chm
@@ -119,19 +119,19 @@ theme_beautiful <- function() {
 windowsFonts("Helvetica" = windowsFont("Helvetica"))
 
 # Step 6: Plot PredictedCHM vs AGB for each AOI ----
-plot_aoi1_chm <- ggplot(new_data_aoi1, aes(x = PredictedCHM, y = `AGB (g/m2)`)) +
+plot_aoi1_chm <- ggplot(new_data_aoi1, aes(x = PredictedCHM, y = AGB_g_m_2)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, color = "black") +
   labs(title = "Predicted vs Observed AGB (AOI 1)", x = "Predicted AGB (g/m2)", y = "Observed AGB (g/m2)") +
   theme_beautiful()
 
-plot_aoi2_chm <- ggplot(new_data_aoi2, aes(x = PredictedCHM, y = `AGB (g/m2)`)) +
+plot_aoi2_chm <- ggplot(new_data_aoi2, aes(x = PredictedCHM, y = AGB_g_m_2)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, color = "black") +
   labs(title = "Predicted vs Observed AGB (AOI 2)", x = "Predicted AGB (g/m2)", y = "Observed AGB (g/m2)") +
   theme_beautiful()
 
-plot_aoi3_chm <- ggplot(new_data_aoi3, aes(x = PredictedCHM, y = `AGB (g/m2)`)) +
+plot_aoi3_chm <- ggplot(new_data_aoi3, aes(x = PredictedCHM, y = AGB_g_m_2)) +
   geom_point() +
   geom_abline(intercept = 0, slope = 1, color = "black") +
   labs(title = "Predicted vs Observed AGB (AOI 3)", x = "Predicted AGB (g/m2)", y = "Observed AGB (g/m2)") +
