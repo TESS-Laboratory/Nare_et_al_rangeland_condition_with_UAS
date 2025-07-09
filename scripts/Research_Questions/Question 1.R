@@ -11,7 +11,7 @@ library(patchwork)      # For combining multiple ggplots into one plot
 library(sjPlot)
 
 # Read the data
-ND <- read_csv("C:/Workspace/Nare_et_al_rangeland_condition_with_UAS/data/Data.csv")
+ND <- read_csv("data/Data.csv")
 
 
 ## Create Plotting theme
@@ -73,7 +73,7 @@ combined_plot <- (a + b + c) +
   plot_annotation(tag_levels = 'a')
 combined_plot
 ggsave("combined_plot.jpg", height = 16, width = 35, units = "cm")
-
+view(ND)
 
 # Convert AOI and Species columns to factors (for categorical variables)
 ND$AOI <- factor(ND$AOI)
@@ -82,6 +82,7 @@ ND$Species <- factor(ND$Species)
 # Perform OLS regression (Ordinary Least Squares)
 m <- lm(AGB_g_m_2 ~ NDVI, data=ND)  # OLS model for AGB vs NDVI
 n <- lm(AGB_g_m_2 ~ Mean_Canopy_Height_m, data=ND)  # OLS model for AGB vs Mean Canopy Height
+
 
 # Print summaries and reports of the OLS models
 summary(n)

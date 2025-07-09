@@ -57,6 +57,7 @@ view(forage_data)
 
 forage_data |> 
   ggplot(aes(x = as.factor(AOI), y = grazing_value)) +
+  geom_boxplot() +
   geom_violin(trim = FALSE, fill = "lightblue", alpha = 0.5) +  # Violin plot
   geom_jitter(width = 0.2, alpha = 0.7, color = "black") +     # Jittered points
   labs(x = "AOI", y = "Synthetic Grazing Value") +
@@ -68,10 +69,10 @@ forage_data |>
 colnames(forage_data) = make.names(colnames(forage_data), unique = TRUE)
 
 # Subset the data to only include the columns grazing_value,
-## Mean_Canopy_Height.m., NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5
+## Mean_Canopy_Height.m., NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5, TCARI, MCARI, NDRE, GCI
 
 forage_data_subset = forage_data |>  
-  select(grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5)
+  select(grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5, TCARI, MCARI, NDRE, GCI)
 
 
 ####################### APPLY BORUTA FEATURE SELECTION #######################----
@@ -141,6 +142,7 @@ autoplot(predictions)
 
 # Compute performance metrics
 rsq_value <- predictions$score(msr("regr.rsq"))  # R-squared
+
 rmse_value <- predictions$score(msr("regr.rmse"))  # RMSE
 mae_value <- predictions$score(msr("regr.mae"))  # MAE
 
@@ -149,8 +151,6 @@ cat("R-squared:", rsq_value, "\n")
 cat("RMSE:", rmse_value, "\n")
 cat("MAE:", mae_value, "\n")
 
-# Define resampling strategy (5-fold cross-validation)
-resampling <- rsmp("cv", folds = 6)
 
 # Perform cross-validation
 set.seed(123)  # Ensures reproducibility
@@ -159,6 +159,7 @@ resampling <- rsmp("cv", folds = 6)  # Define 6-fold
 rr <- resample(task_forage, learner_rf, resampling)
 cat("Cross-validated R-squared:", rr$aggregate(msr("regr.rsq")), "\n")
 cat("Cross-validated RMSE:", rr$aggregate(msr("regr.rmse")), "\n")
+
 cat("Cross-validated MAE:", rr$aggregate(msr("regr.mae")), "\n")
 
 # Feature importance
@@ -180,82 +181,3 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
   theme_beautiful()
 ##########################################################----
 
-##Load data
-forage_data <- read_csv("data/Data.csv")
-# Subset the data to only include the columns grazing_value,
-## Mean_Canopy_Height.m., NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5
-
-forage_data_subset = forage_data |>  
-  select(grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5)
-
-####################### APPLY BORUTA FEATURE SELECTION #######################----
-
-set.seed(123)  # Ensure reproducibility
-boruta_result = Boruta(grazing_value ~ ., data = forage_data_subset, doTrace = 2)
-
-# Print results of Boruta feature selection
-print(boruta_result)
-
-# Confirm important features
-final_features = getSelectedAttributes(boruta_result, withTentative = TRUE)
-cat("Selected Features:", final_features, "\n")
-
-# Subset dataset with selected features
-forage_data_selected = forage_data %>% select(all_of(c("grazing_value", final_features)))
-
-str(forage_data_selected)
-
-df <- as.data.table(forage_data_selected)
-names(df) <- make.names(names(df), unique = TRUE)
-
-## define regression task
-task <- TaskRegr$new(
-  id = "forage_task",
-  backend = df,
-  target = "grazing_value"
-)
-
-### Define rf learner
-learner <- lrn("regr.ranger",
-               num.trees = 100,
-               mtry = 3,                 # Number of variables randomly sampled at each split
-               min.node.size = 5,        # Minimum samples in leaf node
-               importance = "permutation")
-
-#### Evaluate the model with cross validation
-resampling <- rsmp("cv", folds = 10)
-rr <- resample(task, learner, resampling)
-rr$aggregate(msr("regr.rmse"))
-
-###Fit model on whole data
-learner$train(task)
-
-
-####Predict
-predictions <- learner$predict(task)
-head(predictions$response)
-
-# Common regression metrics
-rr$aggregate(msr("regr.rmse"))     # Root Mean Squared Error
-rr$aggregate(msr("regr.rsq"))      # R² (coefficient of determination)
-rr$aggregate(msr("regr.mae"))      # Mean Absolute Error
-
-
-#### view variable importance
-learner$importance()
-
-
-
-
-############################################
-###########
-library(mlr3spatiotempcv)
-
-# Make sure your data has spatial coordinates, e.g., X and Y
-task$col_roles$feature <- setdiff(task$feature_names, c("eastings_m", "northings_m"))
-task$col_roles$coordinate <- c("eastings_m", "northings_m")
-
-resampling_spatial <- rsmp("spcv_coords", folds = 5)
-rr_spatial <- resample(task, learner, resampling_spatial)
-
-rr_spatial$aggregate(msr("regr.rsq"))
