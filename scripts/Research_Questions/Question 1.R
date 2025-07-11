@@ -13,7 +13,6 @@ library(sjPlot)
 # Read the data
 ND <- read_csv("data/Data.csv")
 
-
 ## Create Plotting theme
 theme_beautiful <- function() {
   theme_bw() +

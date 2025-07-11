@@ -1,4 +1,5 @@
 ############LIBRARIES################################----
+library(spdep)
 
 library(tidyverse)
 library(mlr3)
@@ -8,6 +9,10 @@ library(GGally)        # works with mlr3viz
 library(Boruta)        # Feature selection
 library(mlr3spatiotempcv)  ### has resampling methods to account for spatiotemporal autocorrelation
 library(sf)
+library(sf)
+library(tmap)
+library(ggtext)
+
 ########################THEME BEAUTIFUL FOR PLOTS#####----
 ## Create Plotting theme
 
@@ -63,7 +68,7 @@ forage_data |>
   labs(x = "AOI", y = "Synthetic Grazing Value") +
   theme_beautiful()
 
-
+####################
 
 # Ensure valid column names
 colnames(forage_data) = make.names(colnames(forage_data), unique = TRUE)
@@ -72,7 +77,7 @@ colnames(forage_data) = make.names(colnames(forage_data), unique = TRUE)
 ## Mean_Canopy_Height.m., NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5, TCARI, MCARI, NDRE, GCI
 
 forage_data_subset = forage_data |>  
-  select(grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5, TCARI, MCARI, NDRE, GCI)
+  select(AOI, Northing_m, Easting_m, grazing_value, Mean_Canopy_Height_m, NDVI, EVI, OSAVI, TDVI, GDVI,B1,B2,B3,B4,B5, TCARI, MCARI, NDRE, GCI)
 
 
 ####################### APPLY BORUTA FEATURE SELECTION #######################----
@@ -88,19 +93,29 @@ final_features = getSelectedAttributes(boruta_result, withTentative = TRUE)
 cat("Selected Features:", final_features, "\n")
 
 # Subset dataset with selected features
-forage_data_selected = forage_data %>% select(all_of(c("grazing_value", final_features)))
+forage_data_selected = forage_data|> select(all_of(c("grazing_value", final_features)))
 
 str(forage_data_selected)
+#
+
+
+
 
 ########################TASK#################################----
 # Setting up regression task
 
-task_forage = TaskRegr$new(
+task_forage = TaskRegrST$new(
   id = "forage_quality",
   backend = forage_data_selected,
-  target = "grazing_value"
+  target = "grazing_value",
+  coordinate_names = c("Easting_m", "Northing_m"),
+  crs = 32734,
+  coords_as_features = FALSE
 )
 
+task_forage$set_col_roles("AOI", "group")
+
+?mlr3spatiotempcv::TaskRegrST
 ####View task summary
 task_forage
 
@@ -154,7 +169,11 @@ cat("MAE:", mae_value, "\n")
 
 # Perform cross-validation
 set.seed(123)  # Ensures reproducibility
-resampling <- rsmp("cv", folds = 6)  # Define 6-fold 
+ 
+resampling <- rsmp("custom_cv")
+resampling$instantiate(task_forage, col = "AOI")
+
+autoplot(resampling, task_forage)
 
 rr <- resample(task_forage, learner_rf, resampling)
 cat("Cross-validated R-squared:", rr$aggregate(msr("regr.rsq")), "\n")
@@ -181,3 +200,7 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
   theme_beautiful()
 ##########################################################----
 
+###
+##
+###
+#
