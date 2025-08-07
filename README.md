@@ -30,7 +30,7 @@ across gradients of grazing intensity.
 
 ### The repo contains the following sub-folders in the "Scripts" folder:
 
-"Metadata_Extraction" folder Contains scripts for extracting EXIF metadata from drone images.
-"Canopy_Height_Modeling" Contains the script for creating Canopy Height Models (CHM) using drone-derived point cloud data.
-"Zonal_Statistics" Contains scripts for extracting mean canopy heights and vegetation indices from a raster for specified harvest plots
-"Research_Questions" Contains scripts that address the three research questions.
+"Metadata_Extraction" folder Contains scripts for extracting EXIF metadata from drone images.  
+"Canopy_Height_Modeling" Contains the script for creating Canopy Height Models (CHM) using drone-derived point cloud data.  
+"Zonal_Statistics" Contains scripts for extracting mean canopy heights and vegetation indices from a raster for specified harvest plots.  
+"Research_Questions" Contains scripts that address the three research questions.  
