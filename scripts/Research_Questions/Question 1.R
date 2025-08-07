@@ -72,7 +72,7 @@ combined_plot <- (a + b + c) +
   plot_annotation(tag_levels = 'a')
 combined_plot
 ggsave("combined_plot.jpg", height = 16, width = 35, units = "cm")
-view(ND)
+
 
 # Convert AOI and Species columns to factors (for categorical variables)
 ND$AOI <- factor(ND$AOI)
@@ -137,7 +137,7 @@ custom_colors <- c(
 )
 
 # Plot a: Mean Canopy Height vs AGB with robust regression line
-plota <- ND %>%
+plota <- ND  |> 
   ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_abline(intercept = intercept_rn, slope = slope_rn) +  # Add robust regression line
@@ -157,11 +157,11 @@ plota <- ND %>%
   labs(tag = "a)") +
   ylim(0, 1000)  # Set y-axis limits
 
-# Print the plot
-print(plota)
+# Plot
+plot(plota)
 
 # Plot b: Robust regression lines for each species
-plotb <- ND %>%
+plotc <- ND |> 
   ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2, color = Species)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +  # Add robust regression line for each species
@@ -177,8 +177,8 @@ plotb <- ND %>%
   labs(tag = "b)") +
   ylim(0, 1000)  # Set y-axis limits
 
-# Print the plot
-print(plotb)
+# Plot
+plot(plotc)
 
 
 ############### For NDVI vs AGB ###############################----
@@ -187,11 +187,11 @@ print(plotb)
 intercept_rm <- coef(rm)[1]
 slope_rm <- coef(rm)[2]
 p_value_rm <- summary(rm)$coefficients[2, "Pr(>|t|)"]
-equation_rm <- paste0("AGB = ", round(intercept_rm, 2), " + ", round(slope_rm, 2), " * NDVI")
+equation_rm <- paste0("AGB = ", round(intercept_rm, 2), "  ", round(slope_rm, 2), " * NDVI")
 details_rm <- paste0("p-value = ", format.pval(p_value_rm, digits = 2), "\nn = ", nrow(ND))
 
 # Plot c: NDVI vs AGB with robust regression line
-plotc <- ND %>%
+plotb <- ND |> 
   ggplot(aes(x = NDVI, y = AGB_g_m_2)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_abline(intercept = intercept_rm, slope = slope_rm) +  # Add robust regression line
@@ -212,10 +212,10 @@ plotc <- ND %>%
   ylim(0, 1000)  # Set y-axis limits
 
 # Print the plot
-print(plotc)
+print(plotb)
 
 # Plot d: Robust regression lines for each species without model annotations for NDVI
-plotd <- ND %>%
+plotd <- ND  |> 
   ggplot(aes(x = NDVI, y = AGB_g_m_2, color = Species)) +
   geom_point(alpha = 0.6) +  # Scatter plot points
   geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +  # Add robust regression line for each species
@@ -247,3 +247,11 @@ print(combined_plot)
 
 ggsave("combined.jpg", height = 28, width = 28, units = "cm")
 
+
+
+
+
+
+#################
+#######
+####
