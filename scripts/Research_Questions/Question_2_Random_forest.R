@@ -199,8 +199,72 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
        x = "Predictors", y = "Importance Value") +
   theme_beautiful()
 ##########################################################----
-
+######Visualisation
 ###
 ##
 ###
 #
+# Extract prediction data in ggplot-friendly format
+pred_data <- as.data.table(predictions)
+
+# If the above still doesn't work, try this alternative approach:
+if (!exists("pred_data") || nrow(pred_data) == 0) {
+  pred_data <- data.table(
+    truth = predictions$truth,
+    response = predictions$response,
+    row_ids = predictions$row_ids
+  )
+}
+
+# Create predictions plot
+pred_plot <- ggplot(pred_data, aes(x = truth, y = response)) +
+  geom_point(alpha = 0.6, color = "steelblue") +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
+  geom_smooth(method = "lm", se = TRUE, color = "black", size = 0.5) +
+  labs(x = "Input SGVI", 
+       y = "Predicted SGVI")+
+  annotate("text", 
+           x = min(pred_data$truth, na.rm = TRUE), 
+           y = max(pred_data$response, na.rm = TRUE),
+           label = sprintf("R² = %.2f\nRMSE = %.2f", rsq_value, rmse_value),
+           hjust = 0, vjust = 1, size = 3) +
+  theme_beautiful() +
+  theme(plot.title = element_text(size = 10),
+        axis.title = element_text(size = 9))
+
+# Create variable importance plot (ensure importance_df exists)
+if (!exists("importance_df")) {
+  importance_values <- learner_rf$importance()
+  importance_df <- data.frame(
+    Feature = names(importance_values),
+    Importance = importance_values
+  )
+}
+
+importance_plot <- ggplot(importance_df, 
+                          aes(x = reorder(Feature, Importance), 
+                              y = Importance)) +
+  geom_col(fill = "steelblue", width = 0.7) +
+  coord_flip() +
+  labs(x = NULL, 
+       y = "Importance (Gini Index)", 
+       title = "Variable Importance") +
+  theme_beautiful() +
+  theme(plot.title = element_text(size = 10),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 9))
+
+# Combine plots using patchwork
+combined_plot <- pred_plot + importance_plot +
+  plot_annotation(tag_levels = 'a') &
+  theme(plot.tag = element_text(face = "bold"))
+combined_plot
+# Save the combined plot
+ggsave("combined_predictions_importance.png", 
+       combined_plot, 
+       width = 10, 
+       height = 5, 
+       dpi = 300)
+
+# Display the plot
+print(combined_plot)
