@@ -18,8 +18,8 @@ theme_beautiful <- function() {
   theme_bw() +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text = element_text(size = 8, color = "black"),
-      axis.title = element_text(size = 8, color = "black"),
+      axis.text = element_text(size = 12, color = "black"),
+      axis.title = element_text(size = 14, color = "black"),
       axis.line.x = element_line(size = 0.3, color = "black"),
       axis.line.y = element_line(size = 0.3, color = "black"),
       axis.ticks = element_line(size = 0.3, color = "black"),
@@ -136,6 +136,12 @@ custom_colors <- c(
   "E.pallens" = "#FFF000"    # Yellow
 )
 
+### Filter E.pallens from plot c and d as it has few observations
+
+ND_no_Ep <- ND |> 
+  dplyr::filter(Species != "E.pallens")
+
+
 # Plot a: Mean Canopy Height vs AGB with robust regression line
 plota <- ND  |> 
   ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2)) +
@@ -161,21 +167,19 @@ plota <- ND  |>
 plot(plota)
 
 # Plot b: Robust regression lines for each species
-plotc <- ND |> 
+plotc <- ND_no_Ep |> 
   ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2, color = Species)) +
-  geom_point(alpha = 0.6) +  # Scatter plot points
-  geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +  # Add robust regression line for each species
-  theme_beautiful() +  # Use a classic theme
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +
+  theme_beautiful() +
   labs(
     x = "Mean Canopy Height (m)",
-    y = "Above Ground Biomass (g/m²)"
+    y = "Above Ground Biomass (g/m²)",
+    tag = "b)"
   ) +
-  theme(
-    plot.title = element_text(hjust = 0.5)  # Center the plot title
-  ) +
-  scale_color_manual(values = custom_colors) +  # Apply custom colors
-  labs(tag = "b)") +
-  ylim(0, 1000)  # Set y-axis limits
+  scale_color_manual(values = custom_colors) +
+  ylim(0, 1000)
+
 
 # Plot
 plot(plotc)
@@ -215,21 +219,19 @@ plotb <- ND |>
 print(plotb)
 
 # Plot d: Robust regression lines for each species without model annotations for NDVI
-plotd <- ND  |> 
+plotd <- ND_no_Ep |> 
   ggplot(aes(x = NDVI, y = AGB_g_m_2, color = Species)) +
-  geom_point(alpha = 0.6) +  # Scatter plot points
-  geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +  # Add robust regression line for each species
-  theme_beautiful() +  # Use a classic theme
+  geom_point(alpha = 0.6) +
+  geom_smooth(method = "lmrob", formula = y ~ x, se = FALSE) +
+  theme_beautiful() +
   labs(
     x = "NDVI",
-    y = "Above Ground Biomass (g/m²)"
+    y = "Above Ground Biomass (g/m²)",
+    tag = "d)"
   ) +
-  theme(
-    plot.title = element_text(hjust = 0.5)  # Center the plot title
-  ) +
-  scale_color_manual(values = custom_colors) +  # Apply custom colors
-  labs(tag = "d)") +
-  ylim(0, 1000)  # Set y-axis limits
+  scale_color_manual(values = custom_colors) +
+  ylim(0, 1000)
+
 
 # Print the plot
 print(plotd)
@@ -245,7 +247,7 @@ print(combined_plot)
 
 # Save the combined plot using ggsave
 
-ggsave("combined.jpg", height = 28, width = 28, units = "cm")
+ggsave("combined.jpg", height = 28, width = 30, units = "cm")
 
 
 

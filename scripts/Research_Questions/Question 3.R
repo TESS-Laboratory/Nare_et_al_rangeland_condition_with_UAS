@@ -8,6 +8,7 @@
 # Author: Alan Nare and Andrew Cunliffe
 
 # Load necessary libraries
+library(lme4)
 library(tidyverse)
 library(performance)
 library(sjPlot)
@@ -21,12 +22,14 @@ library(car)
 library(emmeans)
 library(MASS)
 ## Create Plotting theme
+
+## Create Plotting theme
 theme_beautiful <- function() {
   theme_bw() +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text = element_text(size = 8, color = "black"),
-      axis.title = element_text(size = 8, color = "black"),
+      axis.text = element_text(size = 12, color = "black"),
+      axis.title = element_text(size = 14, color = "black"),
       axis.line.x = element_line(size = 0.3, color = "black"),
       axis.line.y = element_line(size = 0.3, color = "black"),
       axis.ticks = element_line(size = 0.3, color = "black"),
@@ -63,8 +66,11 @@ ND$AOI <- as.factor(ND$AOI)
 
 # 
 model_robust <- MASS::rlm(AGB_g_m_2 ~ NDVI * AOI + Mean_Canopy_Height_m * AOI, data = ND)
+model_robust <- lm(AGB_g_m_2 ~ NDVI * AOI + Mean_Canopy_Height_m * AOI, data = ND)
 summary(model_robust)
 confint(model_robust)
+###
+
 
 # Generate a grid for NDVI predictions
 ndvi_seq <- seq(min(ND$NDVI), max(ND$NDVI), length.out = 100)
@@ -75,7 +81,7 @@ new_data_ndvi <- expand.grid(
   AOI = aoi_levels
 )
 new_data_ndvi$predicted <- predict(model_robust, newdata = new_data_ndvi)
-
+view(new_data_ndvi)
 ndvi_pred_plot <- ggplot(ND, aes(x = NDVI, y = AGB_g_m_2, color = AOI)) +
   geom_point(alpha = 0.6) +
   geom_line(data = new_data_ndvi, aes(x = NDVI, y = predicted, color = AOI), size = 1.2) +

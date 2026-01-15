@@ -9,13 +9,13 @@ library (rgl)   ##a versatile and interactive 3D viewer with points coloured by 
 library(mapview) ##Interactive viewing of point cloud, raster and vector data
 library(sf)     ### for reading AOI boundary shapefile
 library(raster)
-library(ggplot2)   ##Creating visualisations and plots
+library(tidyverse)   ##Creating visualisations and plots
 library(terra)      ####For CHM smoothing (Post processing)
 
 #######################STEP 1##########################################
 ####Import point cloud data for AOIs---- 
 
-aoi1 <- readLAS("C:/Users/202200875/OneDrive - buan.ac.bw/Documents/Drone research/Data/Metashape Analysis/AOI1 RGB metashape analysis/Classified_AOI1.laz", select = "xyzrnc")
+aoi1 <- readLAS("C:/Users/Alan Dumezweni/University of Exeter/TESSLab - Alan Nare Data/Dissertation/Dissertation Processed data/AOI1_pointcloud.laz", select = "xyzrnc")
 aoi2 <- readLAS("C:/Users/202200875/OneDrive - buan.ac.bw/Documents/Drone research/Data/Metashape Analysis/AOI2 RGB metashape analysis/AOI2_pointcloud.laz", select = "xyzrnc")
 aoi3 <- readLAS("C:/Users/202200875/OneDrive - buan.ac.bw/Documents/Drone research/Data/Metashape Analysis/AOI3 RGB metashape analysis/AOI3_pointcloud.laz", select = "xyzrn")  # load XYZc only
 hist(aoi1@data$Classification)
@@ -23,7 +23,7 @@ hist(aoi1@data$Classification)
 
 ######################STEP 2###########################################
 ################Clipping out our AOI#######----
-polyaoi1 <- st_read("C:/Users/202200875/Downloads/aoi1boundary/AOI1_Boundary.shp") ##Import shapefile
+polyaoi1 <- st_read("Shapefiles/AOI1_Boundary.shp") ##Import shapefile
 las_clipped_aoi1 <- clip_roi(aoi1, polyaoi1)
 
 

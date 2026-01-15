@@ -9,7 +9,7 @@ library(sf)
 library(exactextractr)
 
 # Load multispectral orthomosaic
-multispectral_ortho <- rast("C:/Users/ThinkPad/Downloads/AOI 1 MS/AOI1_orthomosaic_new_nocal.tif")
+multispectral_ortho <- rast("C:Users/Alan Dumezweni/Downloads/MS orthomosaic/AOI3_orthomosaic_multispectral.tif")
 
 # Load harvest plot data
 harvest_plots <- read_csv("data/Harvest_plots_AOI1.csv")
@@ -76,7 +76,7 @@ names(indices_stack) <- c("NDVI", "EVI", "OSAVI", "TDVI", "GDVI", "TCARI", "MCAR
 # Plot combined indices (optional)
 plot(indices_stack)
 
-# Create output folder if not exists
+# Cre# Cre# Create output folder if not exists
 if (!dir.exists("Vegetation_Indices")) {
   dir.create("Vegetation_Indices")
 }

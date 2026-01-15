@@ -1,6 +1,6 @@
 ############LIBRARIES################################----
 library(spdep)
-
+library(patchwork)
 library(tidyverse)
 library(mlr3)
 library(mlr3verse)
@@ -167,19 +167,21 @@ cat("RMSE:", rmse_value, "\n")
 cat("MAE:", mae_value, "\n")
 
 
-# Perform cross-validation
-set.seed(123)  # Ensures reproducibility
- 
-resampling <- rsmp("custom_cv")
-resampling$instantiate(task_forage, col = "AOI")
+# ----------------------------------------------------------
+# Perform 6-Fold Cross-Validation
+# ----------------------------------------------------------
 
-autoplot(resampling, task_forage)
+# Define 6-fold spatial cross-validation
+set.seed(123)
+resampling <- rsmp("spcv_coords", folds = 6)
 
+# Perform spatial cross-validation
 rr <- resample(task_forage, learner_rf, resampling)
-cat("Cross-validated R-squared:", rr$aggregate(msr("regr.rsq")), "\n")
-cat("Cross-validated RMSE:", rr$aggregate(msr("regr.rmse")), "\n")
 
-cat("Cross-validated MAE:", rr$aggregate(msr("regr.mae")), "\n")
+# Aggregate metrics
+cat("Spatial 6-Fold CV R²:", rr$aggregate(msr("regr.rsq")), "\n")
+cat("Spatial 6-Fold CV RMSE:", rr$aggregate(msr("regr.rmse")), "\n")
+cat("Spatial 6-Fold CV MAE:", rr$aggregate(msr("regr.mae")), "\n")
 
 # Feature importance
 importance_values <- learner_rf$importance()
@@ -198,13 +200,14 @@ ggplot(importance_df, aes(x = reorder(Feature, Importance), y = Importance)) +
   labs(title = "Feature Importance (Random Forest)",
        x = "Predictors", y = "Importance Value") +
   theme_beautiful()
+
 ##########################################################----
 ######Visualisation
 ###
 ##
 ###
 #
-# Extract prediction data in ggplot-friendly format
+# Extract prediction data 
 pred_data <- as.data.table(predictions)
 
 # If the above still doesn't work, try this alternative approach:
