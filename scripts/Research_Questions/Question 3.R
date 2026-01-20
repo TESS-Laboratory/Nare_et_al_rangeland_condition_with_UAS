@@ -132,42 +132,20 @@ ggsave("pred_aoi.png",
 
 
 
-
-## ANCOVA
-# ND$AOI <- as.factor(ND$AOI)
-# 
-# # NDVI-AGB relationship with grazing interaction
-# m_ndvi <- robustbase::lmrob(AGB_g_m_2 ~ NDVI * AOI, data = ND)
-# ndvi_anova <- Anova(m_ndvi, type = "III")  # Test interaction significance
-# ndvi_anova
-# 
-# ##plot
-# ggplot(ND, aes(x = NDVI, y = AGB_g_m_2, color = AOI)) +
-#   # geom_point() +
-#   geom_smooth(method = "lmrob", se = FALSE) +
-#   labs(title = "NDVI-AGB Relationship by Grazing Intensity (AOI)")+
-#   theme_beautiful()
-# 
-# 
-# 
-# 
-# # Canopy height-AGB relationship with grazing interaction
-# m_height <- robustbase::lmrob(AGB_g_m_2 ~ Mean_Canopy_Height_m * AOI, data = ND)
-# Anova(m_height, type = "III")
-# 
-# #### plot
-# ggplot(ND, aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2, color = AOI)) +
-#   # geom_point() +
-#   geom_smooth(method = "lmrob", se = FALSE) +
-#   labs(x = "Mean Canopy Height (m)", title = "Canopy Height-AGB Relationship by Grazing Intensity (AOI)")+
-#   theme_beautiful()
-# 
-# combined_plots <- a + b +
-#   plot_annotation(tag_levels = 'a') &
-#   theme(plot.tag = element_text(face = "bold"))
-# combined_plot
+#### Model statistics
+ndvi_slopes <- emtrends(
+  model_robust,
+  specs = ~ AOI,
+  var = "NDVI"
+)
+summary(ndvi_slopes, infer = TRUE)
 
 
-
+chm_slopes <- emtrends(
+  model_robust,
+  specs = ~ AOI,
+  var = "Mean_Canopy_Height_m"
+)
+summary(chm_slopes, infer = TRUE)
 
 
