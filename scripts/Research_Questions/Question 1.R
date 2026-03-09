@@ -117,14 +117,24 @@ tab_model(rm)
 summary(rn)
 tab_model(rn)
 
+# Extract R² from robust regression models
+r2_rn <- summary(rn)$r.squared
+r2_rm <- summary(rm)$r.squared
+
 
 # Extract coefficients and p-values for robust regression lines
 intercept_rn <- coef(rn)[1]
 slope_rn <- coef(rn)[2]
 p_value_rn <- summary(rn)$coefficients[2, "Pr(>|t|)"]
 equation_rn <- paste0("AGB = ", round(intercept_rn, 2), " + ", round(slope_rn, 2), " * Mean Canopy Height (m)")
-details_rn <- paste0("p-value = ", format.pval(p_value_rn, digits = 2), "\nn = ", nrow(ND))
+p_text_rn <- ifelse(p_value_rn < 0.001, "P < 0.001",
+                    paste0("P = ", round(p_value_rn, 3)))
 
+details_rn <- paste0(
+  "R² = ", round(r2_rn, 2),
+  "\n", p_text_rn,
+  "\nn = ", nrow(ND)
+)
 
 # Define a custom color palette for species
 custom_colors <- c(
@@ -192,8 +202,11 @@ intercept_rm <- coef(rm)[1]
 slope_rm <- coef(rm)[2]
 p_value_rm <- summary(rm)$coefficients[2, "Pr(>|t|)"]
 equation_rm <- paste0("AGB = ", round(intercept_rm, 2), "  ", round(slope_rm, 2), " * NDVI")
-details_rm <- paste0("p-value = ", format.pval(p_value_rm, digits = 2), "\nn = ", nrow(ND))
-
+details_rm <- paste0(
+  "R² = ", round(r2_rm, 2),
+  "\nP = ", format.pval(p_value_rm, digits = 4),
+  "\nn = ", nrow(ND)
+)
 # Plot c: NDVI vs AGB with robust regression line
 plotb <- ND |> 
   ggplot(aes(x = NDVI, y = AGB_g_m_2)) +
