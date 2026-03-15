@@ -258,16 +258,16 @@ importance_plot <- ggplot(importance_df,
         axis.title.x = element_text(size = 9))
 
 # Combine plots using patchwork
-combined_plot <- pred_plot + importance_plot +
+combined_plot_rf <- pred_plot + importance_plot +
   plot_annotation(tag_levels = 'a') &
   theme(plot.tag = element_text(face = "bold"))
-combined_plot
+combined_plot_rf
 # Save the combined plot
-ggsave("combined_predictions_importance.png", 
-       combined_plot, 
+ggsave("Figure 5.tiff", 
+       combined_plot_rf, 
        width = 10, 
        height = 5, 
-       dpi = 300)
+       dpi = 300, 
+       device = "tiff", 
+       compression = "lzw")
 
-# Display the plot
-print(combined_plot)

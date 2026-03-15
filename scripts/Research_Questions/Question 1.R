@@ -71,7 +71,7 @@ combined_plot <- (a + b + c) +
   plot_layout(guides = "collect") +
   plot_annotation(tag_levels = 'a')
 combined_plot
-ggsave("combined_plot.jpg", height = 16, width = 35, units = "cm")
+ggsave("combined_plot.tiff", height = 16, width = 35, units = "cm", dpi = 300, compression = "lzw")
 
 
 # Convert AOI and Species columns to factors (for categorical variables)
@@ -260,7 +260,7 @@ print(combined_plot)
 
 # Save the combined plot using ggsave
 
-ggsave("combined.jpg", height = 28, width = 30, units = "cm")
+ggsave("figure 4.tiff", height = 28, width = 30, units = "cm", dpi = 300, device = "tiff", compression = "lzw")
 
 
 
@@ -270,3 +270,4 @@ ggsave("combined.jpg", height = 28, width = 30, units = "cm")
 #################
 #######
 ####
+

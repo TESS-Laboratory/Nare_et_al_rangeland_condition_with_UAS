@@ -118,18 +118,19 @@ chm_pred_plot <- ggplot(ND, aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2, color =
   theme_beautiful()
 
 
-combined_plot <- chm_pred_plot + ndvi_pred_plot +
+combined_plot_qst_3 <- chm_pred_plot + ndvi_pred_plot +
   plot_annotation(tag_levels = 'a') &
   theme(plot.tag = element_text(face = "bold"))
-combined_plot
+combined_plot_qst_3
 
 # Save the combined plot
-ggsave("pred_aoi.png", 
-       combined_plot, 
+ggsave("Figure 6.tiff", 
+       combined_plot_qst_3, 
        width = 10, 
        height = 5, 
-       dpi = 300)
-
+       dpi = 300, 
+       device = "tiff", 
+       compression = "lzw")
 
 
 #### Model statistics

@@ -17,14 +17,14 @@ library(terra)      ####For CHM smoothing (Post processing)
 
 aoi1 <- readLAS("C:/Users/Alan Dumezweni/University of Exeter/TESSLab - Alan Nare Data/Dissertation/Dissertation Processed data/AOI1_pointcloud.laz", select = "xyzrnc")
 aoi2 <- readLAS("C:/Users/202200875/OneDrive - buan.ac.bw/Documents/Drone research/Data/Metashape Analysis/AOI2 RGB metashape analysis/AOI2_pointcloud.laz", select = "xyzrnc")
-aoi3 <- readLAS("C:/Users/202200875/OneDrive - buan.ac.bw/Documents/Drone research/Data/Metashape Analysis/AOI3 RGB metashape analysis/AOI3_pointcloud.laz", select = "xyzrn")  # load XYZc only
-hist(aoi1@data$Classification)
+aoi3 <- readLAS("C:/Users/Alan Dumezweni/University of Exeter/TESSLab - Alan Nare Data/Dissertation/Dissertation Processed data/AOI3_pointcloud.laz", select = "xyzrnc")  # load XYZc only
+hist(aoi3@data$Classification)
 
 
 ######################STEP 2###########################################
 ################Clipping out our AOI#######----
-polyaoi1 <- st_read("Shapefiles/AOI1_Boundary.shp") ##Import shapefile
-las_clipped_aoi1 <- clip_roi(aoi1, polyaoi1)
+polyaoi1 <- st_read("Shapefiles/AOI3_Boundary_shapefile.shp") ##Import shapefile
+las_clipped_aoi1 <- clip_roi(aoi3, polyaoi1)
 
 
 #####################STEP 3###Checking the data##############----
@@ -33,7 +33,7 @@ print(las_clipped_aoi1) ### Shows point cloud metadata
 summary(las_clipped_aoi1) #### Detailed print out
 las_check(las_clipped_aoi1) # note high number of duplicate points in current file.
 hist(las_clipped_aoi1@data$Z)
-plot(las_clipped_aoi1)
+# plot(las_clipped_aoi1)
 
 ####################STEP 4 Filtering ground from pointcloud###################
 ground <- filter_poi(las_clipped_aoi1, Classification == 2)
