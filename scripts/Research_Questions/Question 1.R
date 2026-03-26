@@ -9,7 +9,7 @@ library(robustbase)     # For robust regression methods (lmrob)
 library(olsrr)          # For OLS regression diagnostics (e.g., residual plots)
 library(patchwork)      # For combining multiple ggplots into one plot
 library(sjPlot)
-
+library(broom)
 # Read the data
 ND <- read_csv("data/Data.csv")
 
@@ -18,8 +18,8 @@ theme_beautiful <- function() {
   theme_bw() +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text = element_text(size = 12, color = "black"),
-      axis.title = element_text(size = 14, color = "black"),
+      axis.text = element_text(size = 16, color = "black"),
+      axis.title = element_text(size = 16, color = "black"),
       axis.line.x = element_line(size = 0.3, color = "black"),
       axis.line.y = element_line(size = 0.3, color = "black"),
       axis.ticks = element_line(size = 0.3, color = "black"),
@@ -35,8 +35,8 @@ theme_beautiful <- function() {
         hjust = 0.5,
         color = "black"
       ),
-      legend.text = element_text(size = 8, color = "black"),
-      legend.title = element_text(size = 8, color = "black"),
+      legend.text = element_text(size = 12, color = "black"),
+      legend.title = element_text(size = 12, color = "black"),
       legend.position = c(0.9, 0.9),
       legend.key.size = unit(0.9, "line"),
       legend.background = element_rect(
@@ -71,13 +71,76 @@ combined_plot <- (a + b + c) +
   plot_layout(guides = "collect") +
   plot_annotation(tag_levels = 'a')
 combined_plot
-ggsave("combined_plot.tiff", height = 16, width = 35, units = "cm", dpi = 300, compression = "lzw")
+ggsave("combined_plot.tiff", height = 16, width = 35, units = "cm", dpi = 600, compression = "lzw")
 
 
 # Convert AOI and Species columns to factors (for categorical variables)
 ND$AOI <- factor(ND$AOI)
 ND$Species <- factor(ND$Species)
 
+
+
+#######Testing all indices against agb####################################
+
+indices <- c("NDVI", "GDVI", "TDVI", "EVI", "TCARI", "MCARI", "NDRE", "GCI")
+
+model_results <- list()
+
+for (ind in indices) {
+  # Remove rows with NA/NaN/Inf in AGB or the current index
+  ND_clean <- ND %>%
+    filter(!is.na(AGB_g_m_2) & !is.na(.data[[ind]]) &
+             is.finite(AGB_g_m_2) & is.finite(.data[[ind]]))
+  
+  # Skip this index if no valid data remains
+  if (nrow(ND_clean) < 5) next  # at least 5 points to fit a model
+  
+  # Build OLS model
+  formula <- as.formula(paste("AGB_g_m_2 ~", ind))
+  fit <- robustbase::lmrob(formula, data = ND_clean)
+  
+  # Extract tidy and glance summaries
+  tidy_fit <- tidy(fit)
+  glance_fit <- glance(fit)
+  
+  # Store metrics
+  model_results[[ind]] <- data.frame(
+    Index = ind,
+    Adj_R2 = glance_fit$adj.r.squared,
+    R2 = glance_fit$r.squared,
+    p_value = tidy_fit$p.value[2],
+    Slope = tidy_fit$estimate[2],
+    RSE = glance_fit$sigma,
+    AIC = glance_fit$AIC
+  )
+}
+
+# Combine into a table and rank by Adj_R2
+results_table <- bind_rows(model_results) %>%
+  arrange(desc(Adj_R2))
+
+view(results_table)
+
+#### Pairwise comparison of Vegetation indices
+veg_indices <- ND %>% 
+  select(NDVI, GDVI, TDVI, EVI, TCARI, MCARI, NDRE, GCI)
+
+# Remove rows with NA/NaN/Inf
+veg_indices_clean <- veg_indices %>% 
+  filter(if_all(everything(), ~ !is.na(.) & is.finite(.)))
+
+# Compute correlation matrix (Pearson)
+cor_matrix <- cor(veg_indices_clean, method = "pearson")
+
+# Print full correlation matrix
+print(cor_matrix)
+
+# Optionally, check correlation of each index vs NDVI specifically
+cor_vs_NDVI <- cor_matrix["NDVI", ]
+print(cor_vs_NDVI)
+
+
+################################################################################
 # Perform OLS regression (Ordinary Least Squares)
 m <- lm(AGB_g_m_2 ~ NDVI, data=ND)  # OLS model for AGB vs NDVI
 n <- lm(AGB_g_m_2 ~ Mean_Canopy_Height_m, data=ND)  # OLS model for AGB vs Mean Canopy Height
@@ -153,25 +216,42 @@ ND_no_Ep <- ND |>
 
 
 # Plot a: Mean Canopy Height vs AGB with robust regression line
-plota <- ND  |> 
+plota <- ND |> 
   ggplot(aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2)) +
-  geom_point(alpha = 0.6) +  # Scatter plot points
-  geom_abline(intercept = intercept_rn, slope = slope_rn) +  # Add robust regression line
-  theme_beautiful() +  # Use a classic theme
+  geom_point(alpha = 0.6) +
+  geom_abline(intercept = intercept_rn, slope = slope_rn) +
   labs(
     x = "Mean Canopy Height (m)",
     y = "Above Ground Biomass (g/m²)"
   ) +
   theme(
-    plot.title = element_text(hjust = 0.5)  # Center the plot title
+    plot.title = element_text(hjust = 0.5)
   ) +
-  annotate("text", x = min(ND$Mean_Canopy_Height_m), y = max(ND$AGB_g_m_2) - 0.05 * max(ND$AGB_g_m_2),
-           label = equation_rn, hjust = 0, vjust = 1, size = 4, color = "black") +
-  annotate("text", x = min(ND$Mean_Canopy_Height_m), y = max(ND$AGB_g_m_2) - 0.15 * max(ND$AGB_g_m_2),
-           label = details_rn, hjust = 0, vjust = 1, size = 4, color = "black") +
-  scale_color_manual(values = custom_colors) +  # Apply custom colors
+  # Align annotations with top y-axis tick
+  annotate(
+    "text", 
+    x = min(ND$Mean_Canopy_Height_m), 
+    y = 1000,  # top of y-axis
+    label = equation_rn, 
+    hjust = 0, 
+    vjust = 1, 
+    size = 5,  # slightly larger for visibility
+    color = "black"
+  ) +
+  annotate(
+    "text", 
+    x = min(ND$Mean_Canopy_Height_m), 
+    y = 950,  # slightly below first annotation
+    label = details_rn, 
+    hjust = 0, 
+    vjust = 1, 
+    size = 5,
+    color = "black"
+  ) +
+  scale_color_manual(values = custom_colors) +
   labs(tag = "a)") +
-  ylim(0, 1000)  # Set y-axis limits
+  ylim(0, 1000)+
+  theme_beautiful()
 
 # Plot
 plot(plota)
@@ -210,24 +290,40 @@ details_rm <- paste0(
 # Plot c: NDVI vs AGB with robust regression line
 plotb <- ND |> 
   ggplot(aes(x = NDVI, y = AGB_g_m_2)) +
-  geom_point(alpha = 0.6) +  # Scatter plot points
-  geom_abline(intercept = intercept_rm, slope = slope_rm) +  # Add robust regression line
-  theme_beautiful() +  # Use a classic theme
+  geom_point(alpha = 0.6) +
+  geom_abline(intercept = intercept_rm, slope = slope_rm) +
+  theme_beautiful() +
   labs(
     x = "NDVI",
     y = "Above Ground Biomass (g/m²)"
   ) +
   theme(
-    plot.title = element_text(hjust = 0.5)  # Center the plot title
+    plot.title = element_text(hjust = 0.5)
   ) +
-  annotate("text", x = min(ND$NDVI), y = max(ND$AGB_g_m_2) - 0.05 * max(ND$AGB_g_m_2),
-           label = equation_rm, hjust = 0, vjust = 1, size = 4, color = "black") +
-  annotate("text", x = min(ND$NDVI), y = max(ND$AGB_g_m_2) - 0.15 * max(ND$AGB_g_m_2),
-           label = details_rm, hjust = 0, vjust = 1, size = 4, color = "black") +
-  scale_color_manual(values = custom_colors) +  # Apply custom colors
+  # Align annotations with top y-axis tick
+  annotate(
+    "text", 
+    x = min(ND$NDVI), 
+    y = 1000,  # top of y-axis
+    label = equation_rm, 
+    hjust = 0, 
+    vjust = 1, 
+    size = 5,
+    color = "black"
+  ) +
+  annotate(
+    "text", 
+    x = min(ND$NDVI), 
+    y = 950,  # slightly below the first annotation
+    label = details_rm, 
+    hjust = 0, 
+    vjust = 1, 
+    size = 5,
+    color = "black"
+  ) +
+  scale_color_manual(values = custom_colors) +
   labs(tag = "c)") +
-  ylim(0, 1000)  # Set y-axis limits
-
+  ylim(0, 1000)
 # Print the plot
 print(plotb)
 
@@ -260,7 +356,7 @@ print(combined_plot)
 
 # Save the combined plot using ggsave
 
-ggsave("figure 4.tiff", height = 28, width = 30, units = "cm", dpi = 300, device = "tiff", compression = "lzw")
+ggsave("figure 4.tiff", height = 28, width = 30, units = "cm", dpi = 600, device = "tiff", compression = "lzw")
 
 
 

@@ -12,16 +12,17 @@ library(sf)
 library(sf)
 library(tmap)
 library(ggtext)
+library(grid)
 
 ########################THEME BEAUTIFUL FOR PLOTS#####----
-## Create Plotting theme
 
+## Create Plotting theme
 theme_beautiful <- function() {
   theme_bw() +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text = element_text(size = 8, color = "black"),
-      axis.title = element_text(size = 8, color = "black"),
+      axis.text = element_text(size = 16, color = "black"),
+      axis.title = element_text(size = 16, color = "black"),
       axis.line.x = element_line(size = 0.3, color = "black"),
       axis.line.y = element_line(size = 0.3, color = "black"),
       axis.ticks = element_line(size = 0.3, color = "black"),
@@ -37,8 +38,8 @@ theme_beautiful <- function() {
         hjust = 0.5,
         color = "black"
       ),
-      legend.text = element_text(size = 8, color = "black"),
-      legend.title = element_text(size = 8, color = "black"),
+      legend.text = element_text(size = 12, color = "black"),
+      legend.title = element_text(size = 12, color = "black"),
       legend.position = c(0.9, 0.9),
       legend.key.size = unit(0.9, "line"),
       legend.background = element_rect(
@@ -50,7 +51,6 @@ theme_beautiful <- function() {
     )
 }
 windowsFonts("Helvetica" = windowsFont("Helvetica")) # Ensure font is mapped correctly
-
 
 ###########LOADING DATA################################----
 
@@ -115,7 +115,7 @@ task_forage = TaskRegrST$new(
 
 task_forage$set_col_roles("AOI", "group")
 
-?mlr3spatiotempcv::TaskRegrST
+# ?mlr3spatiotempcv::TaskRegrST
 ####View task summary
 task_forage
 
@@ -220,20 +220,39 @@ if (!exists("pred_data") || nrow(pred_data) == 0) {
 }
 
 # Create predictions plot
-pred_plot <- ggplot(pred_data, aes(x = truth, y = response)) +
+# Create the base plot first
+base_plot <- ggplot(pred_data, aes(x = truth, y = response)) +
   geom_point(alpha = 0.6, color = "steelblue") +
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", color = "red") +
   geom_smooth(method = "lm", se = TRUE, color = "black", size = 0.5) +
-  labs(x = "Input SGVI", 
-       y = "Predicted SGVI")+
-  annotate("text", 
-           x = min(pred_data$truth, na.rm = TRUE), 
-           y = max(pred_data$response, na.rm = TRUE),
-           label = sprintf("R² = %.2f\nRMSE = %.2f", rsq_value, rmse_value),
-           hjust = 0, vjust = 1, size = 3) +
-  theme_beautiful() +
-  theme(plot.title = element_text(size = 10),
-        axis.title = element_text(size = 9))
+  labs(
+    x = "Input SGVI", 
+    y = "Predicted SGVI"
+  ) +
+  theme_beautiful()
+
+# Extract computed y-axis limits from ggplot
+y_limits <- ggplot_build(base_plot)$layout$panel_params[[1]]$y.range
+y_top <- y_limits[2]
+y_bottom <- y_limits[1]
+y_range <- y_top - y_bottom
+
+# Now add annotations aligned with top tick
+pred_plot <- base_plot +
+  annotate(
+    "text",
+    x = min(pred_data$truth, na.rm = TRUE),
+    y = y_top,  # top of y-axis
+    label = sprintf("R² = %.2f", rsq_value),
+    hjust = 0, vjust = 1, size = 5, color = "black"
+  ) +
+  annotate(
+    "text",
+    x = min(pred_data$truth, na.rm = TRUE),
+    y = y_top - 0.05 * y_range,  # slightly below top
+    label = sprintf("RMSE = %.2f", rmse_value),
+    hjust = 0, vjust = 1, size = 5, color = "black"
+  )
 
 # Create variable importance plot (ensure importance_df exists)
 if (!exists("importance_df")) {
@@ -249,14 +268,17 @@ importance_plot <- ggplot(importance_df,
                               y = Importance)) +
   geom_col(fill = "steelblue", width = 0.7) +
   coord_flip() +
-  labs(x = NULL, 
-       y = "Importance (Gini Index)", 
-       title = "Variable Importance") +
+  labs(
+    x = NULL, 
+    y = "Importance (Gini Index)", 
+    title = "Variable Importance"
+  ) +
   theme_beautiful() +
-  theme(plot.title = element_text(size = 10),
-        axis.text.y = element_text(size = 8),
-        axis.title.x = element_text(size = 9))
-
+  theme(
+    plot.title = element_text(size = 14, hjust = 0.5),  # match axis text size
+    axis.title.y = element_text(size = 14),
+    axis.title.x = element_text(size = 14)
+  )
 # Combine plots using patchwork
 combined_plot_rf <- pred_plot + importance_plot +
   plot_annotation(tag_levels = 'a') &
@@ -265,9 +287,10 @@ combined_plot_rf
 # Save the combined plot
 ggsave("Figure 5.tiff", 
        combined_plot_rf, 
-       width = 10, 
+       width = 14, 
        height = 5, 
-       dpi = 300, 
+       dpi = 600, 
        device = "tiff", 
        compression = "lzw")
+
 

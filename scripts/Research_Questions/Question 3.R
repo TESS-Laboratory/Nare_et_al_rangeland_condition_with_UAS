@@ -28,8 +28,8 @@ theme_beautiful <- function() {
   theme_bw() +
     theme(
       text = element_text(family = "Helvetica"),
-      axis.text = element_text(size = 12, color = "black"),
-      axis.title = element_text(size = 14, color = "black"),
+      axis.text = element_text(size = 16, color = "black"),
+      axis.title = element_text(size = 16, color = "black"),
       axis.line.x = element_line(size = 0.3, color = "black"),
       axis.line.y = element_line(size = 0.3, color = "black"),
       axis.ticks = element_line(size = 0.3, color = "black"),
@@ -45,8 +45,8 @@ theme_beautiful <- function() {
         hjust = 0.5,
         color = "black"
       ),
-      legend.text = element_text(size = 8, color = "black"),
-      legend.title = element_text(size = 8, color = "black"),
+      legend.text = element_text(size = 12, color = "black"),
+      legend.title = element_text(size = 12, color = "black"),
       legend.position = c(0.9, 0.9),
       legend.key.size = unit(0.9, "line"),
       legend.background = element_rect(
@@ -85,11 +85,14 @@ view(new_data_ndvi)
 ndvi_pred_plot <- ggplot(ND, aes(x = NDVI, y = AGB_g_m_2, color = AOI)) +
   geom_point(alpha = 0.6) +
   geom_line(data = new_data_ndvi, aes(x = NDVI, y = predicted, color = AOI), size = 1.2) +
-  labs(x = "NDVI",
-    y = "Aboveground Biomass (g/m²)",
-    color = "AOI"
+  labs(
+    x = "NDVI",
+    y = "Aboveground Biomass (g/m²)"
   ) +
-  theme_beautiful()
+  theme_beautiful() +
+  theme(
+    legend.position = "none"  # removes the legend
+  )
 
 ## Canopy height
 # Generate a sequence of canopy height values
@@ -115,7 +118,10 @@ chm_pred_plot <- ggplot(ND, aes(x = Mean_Canopy_Height_m, y = AGB_g_m_2, color =
     y = "Aboveground Biomass (g/m²)",
     color = "AOI"
   ) +
-  theme_beautiful()
+  theme_beautiful()+
+  theme(
+    legend.position = "left"  # move legend to the left
+  )
 
 
 combined_plot_qst_3 <- chm_pred_plot + ndvi_pred_plot +
@@ -128,7 +134,7 @@ ggsave("Figure 6.tiff",
        combined_plot_qst_3, 
        width = 10, 
        height = 5, 
-       dpi = 300, 
+       dpi = 600, 
        device = "tiff", 
        compression = "lzw")
 

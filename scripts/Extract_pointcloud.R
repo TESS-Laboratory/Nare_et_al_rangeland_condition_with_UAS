@@ -57,7 +57,7 @@ process_aoi <- function(las_path, harvest_csv, plants_to_export, output_folder) 
 process_aoi(
   las_path = "C:/Users/Alan Dumezweni/University of Exeter/TESSLab - Alan Nare Data/Dissertation/Dissertation Processed data/AOI1_pointcloud.laz",
   harvest_csv = "data/Harvest_plots_AOI1.csv",
-  plants_to_export = c("S1P01","S1P02"),
+  plants_to_export = c("S1P02"),
   output_folder = "exports"
 )
 
@@ -67,7 +67,7 @@ process_aoi(
 process_aoi(
   las_path = "C:/Users/Alan Dumezweni/University of Exeter/TESSLab - Alan Nare Data/Dissertation/Dissertation Processed data/AOI2_pointcloud.laz",
   harvest_csv = "data/Harvest_plots_AOI2.csv",
-  plants_to_export = c("S2P13"),
+  plants_to_export = c("S2P13", "S2P01", "S2P20"),
   output_folder = "exports"
 )
 
