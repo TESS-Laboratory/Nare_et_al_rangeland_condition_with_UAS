@@ -72,7 +72,7 @@ combined_plot <- (a + b + c) +
   plot_annotation(tag_levels = 'a')
 combined_plot
 ggsave("combined_plot.tiff", height = 16, width = 35, units = "cm", dpi = 600, compression = "lzw")
-
+ggsave("combined_plot.pdf", height = 16, width = 35, units = "cm")
 
 # Convert AOI and Species columns to factors (for categorical variables)
 ND$AOI <- factor(ND$AOI)
@@ -357,7 +357,7 @@ print(combined_plot)
 # Save the combined plot using ggsave
 
 ggsave("figure 4.tiff", height = 28, width = 30, units = "cm", dpi = 600, device = "tiff", compression = "lzw")
-
+ggsave("figure 4.pdf", height = 28, width = 30, units = "cm")
 
 
 

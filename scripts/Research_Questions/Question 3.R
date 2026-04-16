@@ -138,7 +138,10 @@ ggsave("Figure 6.tiff",
        device = "tiff", 
        compression = "lzw")
 
-
+ggsave("Figure_6.pdf", 
+       combined_plot_qst_3, 
+       width = 10, 
+       height = 5)
 #### Model statistics
 ndvi_slopes <- emtrends(
   model_robust,

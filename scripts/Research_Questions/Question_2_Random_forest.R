@@ -293,4 +293,7 @@ ggsave("Figure 5.tiff",
        device = "tiff", 
        compression = "lzw")
 
-
+ggsave("Figure 5.pdf", 
+       combined_plot_rf, 
+       width = 14, 
+       height = 5)
