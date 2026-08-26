@@ -55,7 +55,7 @@ windowsFonts("Helvetica" = windowsFont("Helvetica")) # Ensure font is mapped cor
 ###########LOADING DATA################################----
 
 # Load data
-forage_data = read_csv("data/Data.csv")
+forage_data = read_csv("data/raw/Data.csv")
 view(forage_data)
 
 ################VISUALISE DATA###########################----
@@ -285,7 +285,7 @@ combined_plot_rf <- pred_plot + importance_plot +
   theme(plot.tag = element_text(face = "bold"))
 combined_plot_rf
 # Save the combined plot
-ggsave("Figure 5.tiff", 
+ggsave("outputs/figures/Figure 5.tiff", 
        combined_plot_rf, 
        width = 14, 
        height = 5, 
@@ -293,7 +293,7 @@ ggsave("Figure 5.tiff",
        device = "tiff", 
        compression = "lzw")
 
-ggsave("Figure 5.pdf", 
+ggsave("outputs/figures/Figure 5.pdf", 
        combined_plot_rf, 
        width = 14, 
        height = 5)

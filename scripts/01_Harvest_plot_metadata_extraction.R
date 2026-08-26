@@ -1,3 +1,8 @@
+# Extracts GPS coordinates, altitude, acquisition timestamps, and RTK positioning
+# information from DJI drone image EXIF metadata for each harvest-plot AOI.
+# Outputs an AOI-specific CSV file containing the extracted image metadata.
+##This is for images captured using DJI drones (e.g Phantom 4 RTK and/ Phantom 4 Multispectral)
+
 # Load packages
 library(exifr)
 

@@ -60,7 +60,7 @@ theme_beautiful <- function() {
 windowsFonts("Helvetica" = windowsFont("Helvetica")) # Ensure font is mapped correctly
 
 # Read the data
-ND <- read_csv("data/Data.csv")
+ND <- read_csv("data/raw/Data.csv")
 head(ND)
 ND$AOI <- as.factor(ND$AOI)
 
@@ -130,7 +130,7 @@ combined_plot_qst_3 <- chm_pred_plot + ndvi_pred_plot +
 combined_plot_qst_3
 
 # Save the combined plot
-ggsave("Figure 6.tiff", 
+ggsave("outputs/figures/Figure 6.tiff", 
        combined_plot_qst_3, 
        width = 10, 
        height = 5, 
@@ -138,7 +138,7 @@ ggsave("Figure 6.tiff",
        device = "tiff", 
        compression = "lzw")
 
-ggsave("Figure_6.pdf", 
+ggsave("outputs/figures/Figure_6.pdf", 
        combined_plot_qst_3, 
        width = 10, 
        height = 5)

@@ -11,7 +11,7 @@ library(patchwork)      # For combining multiple ggplots into one plot
 library(sjPlot)
 library(broom)
 # Read the data
-ND <- read_csv("data/Data.csv")
+ND <- read_csv("data/raw/Data.csv")
 
 ## Create Plotting theme
 theme_beautiful <- function() {
@@ -71,8 +71,8 @@ combined_plot <- (a + b + c) +
   plot_layout(guides = "collect") +
   plot_annotation(tag_levels = 'a')
 combined_plot
-ggsave("combined_plot.tiff", height = 16, width = 35, units = "cm", dpi = 600, compression = "lzw")
-ggsave("combined_plot.pdf", height = 16, width = 35, units = "cm")
+ggsave("outputs/figures/combined_plot.tiff", height = 16, width = 35, units = "cm", dpi = 600, compression = "lzw")
+ggsave("outputs/figures/combined_plot.pdf", height = 16, width = 35, units = "cm")
 
 # Convert AOI and Species columns to factors (for categorical variables)
 ND$AOI <- factor(ND$AOI)
@@ -165,7 +165,7 @@ resid_lev_plotndvi <- ols_plot_resid_lev(m)
 
 # Apply theme beautiful
 resid_lev_plotndvi + theme_beautiful()
-ggsave("combined.jpg", height = 16, width = 16, units = "cm")
+ggsave("outputs/figures/combined.jpg", height = 16, width = 16, units = "cm")
 
 
 
@@ -356,8 +356,8 @@ print(combined_plot)
 
 # Save the combined plot using ggsave
 
-ggsave("figure 4.tiff", height = 28, width = 30, units = "cm", dpi = 600, device = "tiff", compression = "lzw")
-ggsave("figure 4.pdf", height = 28, width = 30, units = "cm")
+ggsave("outputs/figures/figure 4.tiff", height = 28, width = 30, units = "cm", dpi = 600, device = "tiff", compression = "lzw")
+ggsave("outputs/figures/figure 4.pdf", height = 28, width = 30, units = "cm")
 
 
 

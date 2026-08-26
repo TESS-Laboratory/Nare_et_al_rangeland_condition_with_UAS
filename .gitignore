@@ -50,3 +50,12 @@ rsconnect/
 
 # Ignore exported figures and rasters (UAV plots)
 exports/
+.positai
+
+
+############################
+# Explicit large-file exclusions
+############################
+data/processed/laz/
+data/processed/raster/
+outputs/exports/
