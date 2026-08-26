@@ -1,8 +1,4 @@
 ---
-editor:
-  markdown:
-    wrap: 72
----
 
 # Evaluating rangeland condition using remote sensing from Unoccupied Aerial Vehicles (UAVs)
 
