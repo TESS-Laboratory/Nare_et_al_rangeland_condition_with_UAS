@@ -8,7 +8,10 @@ Use of this code is licensed under [![Licence: GPL v3](https://img.shields.io/ba
 
 Contact Alan D Nare. and/or Andrew M Cunliffe at (a.dumezweni@exeter.ac.uk / a.cunliffe@exeter.ac.uk).
 ---
+
 ![image alt](https://github.com/TESS-Laboratory/Nare_et_al_rangeland_condition_with_UAS/blob/main/logos.png?raw=true)
+
+---
 
 ## Project overview
 
