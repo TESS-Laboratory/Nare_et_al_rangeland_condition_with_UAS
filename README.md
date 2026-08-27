@@ -7,6 +7,7 @@ A permanent version of this repository is archived at [![DOI](https://doi.org/10
 Use of this code is licensed under [![Licence: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](...)
 
 Contact Alan D Nare. and/or Andrew M Cunliffe at (a.dumezweni@exeter.ac.uk / a.cunliffe@exeter.ac.uk).
+---
 ![image alt]([https://github.com/TESS-Laboratory/Nare_et_al_rangeland_condition_with_UAS/blob/main/Picture1.png?raw=true)](https://github.com/TESS-Laboratory/Nare_et_al_rangeland_condition_with_UAS/blob/main/TESS%20Logo%20normal.png?raw=true)
 ---
 
