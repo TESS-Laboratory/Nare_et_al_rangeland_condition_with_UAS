@@ -1,6 +1,9 @@
 # Evaluating rangeland condition using remote sensing from Unoccupied Aerial Vehicles (UAVs)
 
-> Alan D Nare., Glenn Slade., Lawrence Akanyang., Jeremy S Perkins & Andrew M Cunliffe. (2026). *Canopy height from drone photogrammetry better predicts aboveground biomass than vegetation greenness indices in a semi-arid savanna*. African Journal of Range & Forage Science. DOI: https://doi.org/10.2989/10220119.2026.2688781
+> Alan D Nare., Glenn Slade., Lawrence Akanyang., Jeremy S Perkins & Andrew M Cunliffe. (2026). 
+*Canopy height from drone photogrammetry better predicts aboveground biomass than 
+vegetation greenness indices in a semi-arid savanna*. African Journal of Range & 
+Forage Science. [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18187018.svg)](https://doi.org/10.2989/10220119.2026.2688781)
 
 A permanent version of this repository is archived at [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.18187018.svg)](https://doi.org/10.5281/zenodo.18187018)
 
