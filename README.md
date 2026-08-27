@@ -12,7 +12,6 @@ Contact Alan D Nare. and/or Andrew M Cunliffe at (a.dumezweni@exeter.ac.uk / a.c
   <img src="https://github.com/TESS-Laboratory/Nare_et_al_rangeland_condition_with_UAS/blob/main/UoE%20white-backed-logo.jpg?raw=true" width="200">
   <img src="https://github.com/TESS-Laboratory/Nare_et_al_rangeland_condition_with_UAS/blob/main/TESS%20Logo%20normal.png?raw=true" width="200">
 </p>
----
 
 ## Project overview
 
